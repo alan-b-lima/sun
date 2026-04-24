@@ -227,10 +227,14 @@ The behavior list is a list of behaviors, which are defined as below, a keyword 
 
 ```
 BehaviorList = "nil" | Behavior { "," Behavior } .
-Behavior     = "absorb" "[" CellarName "]" | "release" "[" CellarName "]" .
+Behavior
+    = "absorb" "[" CellarName "]"
+    | "release" "[" CellarName "]"
+    | "write" "[" CellarName, RuneName "]"
+    .
 ```
 
-The `absorb` behavior pushes the atom from the world into the cellar, while the `release` behavior pops an atom from the cellar and release it into the world.
+The `absorb` behavior pushes the atom from the world into the cellar, the `release` behavior pops an atom from the cellar and release it into the world, and the `write` behavior writes a rune on the top of the cellar.
 
 ### Movement
 
