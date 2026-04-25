@@ -5,41 +5,30 @@ type Tree struct {
 }
 
 type (
+	Decl     interface{ decl() }
+	AtomNode interface{ atom() }
+)
+
+type (
 	SpellSource struct {
-		Name  string
-		Decls DeclList
+		Name  Name
+		Decls []Decl
 	}
 
-	DeclList struct {
-		Groups  []AtomGroupDecl
-		Cellars []CellarDecl
-		Runes   []RuneDecl
-		States  []StateDecl
-	}
+	Name string
+	Atom string
 
 	AtomGroupDecl struct {
-		Name  string
-		Atoms AtomList
-	}
-
-	AtomList struct {
-		Atoms  []Atom
-		Groups []AtomGroup
-	}
-
-	Atom string
-	Name string
-
-	AtomGroup struct {
-		Name string
+		Name  Name
+		Atoms []AtomNode
 	}
 
 	CellarDecl struct {
-		Name string
+		Name Name
 	}
 
 	RuneDecl struct {
-		Name string
+		Name Name
 	}
 
 	StateDecl struct {
@@ -53,13 +42,13 @@ type (
 		Behavior    Behavior
 		Moves       []Move
 		Final       State
-		AlwaysHalt  bool
+		Halt        bool
 	}
 
 	AtomCond struct {
 		Tag   Tag
 		Atom  Atom
-		Group AtomGroup
+		Group Name
 	}
 
 	CellarCond struct {
@@ -69,10 +58,6 @@ type (
 		Name   Name
 	}
 
-	AtomGroupOrRune struct {
-		Name string
-	}
-
 	Behavior struct {
 		Action Action
 		Cellar Name
@@ -80,8 +65,8 @@ type (
 	}
 
 	State struct {
-		Name  string
-		Param []State
+		Name   Name
+		Params []State
 	}
 )
 
@@ -105,10 +90,19 @@ const (
 type Move int
 
 const (
-	MoveUp Move = iota
+	MoveNone Move = iota
+	MoveUp
 	MoveDown
 	MoveLeft
 	MoveRight
 	MoveFace
 	MoveBack
 )
+
+func (AtomGroupDecl) decl() {}
+func (CellarDecl) decl()    {}
+func (RuneDecl) decl()      {}
+func (StateDecl) decl()     {}
+
+func (Atom) atom() {}
+func (Name) atom() {}
