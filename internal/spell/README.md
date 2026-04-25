@@ -238,16 +238,16 @@ The `absorb` behavior pushes the atom from the world into the cellar, the `relea
 
 ### Movement
 
-Move list is a list of moves, which are defined as below, a wildcard `:` (U+003A) may also be used to indicate no move.
+Move list is a list of moves, which are defined as below, the keyword `nil` may also be used to indicate no move.
 
 ```
-MoveList = ":" | Move { "," Move } .
+MoveList = "nil" | Move { "," Move } .
 Move     = "up" | "down" | "left" | "right" | "face" | "back" .
 ```
 
 The directions `up`, `down`, `left`, and `right` move the spell in the corresponding direction, while the direction `face` makes the spell move in the direction from which the spell was casted, horizontally, and `back` makes the spell move in the reverse direction of casting.
 
-A spell can only move to an adjacent location, including diagonals, each direction can be thought as a vector `(x, y)`, `up` = `(0, 1)`; `down` = `(0, -1)`; `left` = `(-1, 0)`; `right` = `(1, 0)`; `face` = `left` or `right`; `back` = inverse of `face`. If the sum of all moves yields a value outside of `[-1, 1]` for any coordinate, the movement is considered illegal.
+A spell can only move to an adjacent location, including diagonals, each direction can be thought as a vector (x, y), `nil` = (0, 0); `up` = (0, 1); `down` = (0, -1); `left` = (-1, 0); `right` = (1, 0); `face` = (0, f); `back` = (0, -f). If the sum of all moves yields a value outside of &PlusMinus;1 for any coordinate, the movement is considered illegal.
 
 ### Final state
 

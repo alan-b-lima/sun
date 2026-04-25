@@ -51,7 +51,6 @@ const (
 	RBrace // }
 
 	Semicolon // ;
-	Colon     // :
 	Comma     // ,
 	Dot       // .
 
@@ -119,7 +118,6 @@ var tokens = [...]string{
 	RBrace: "}",
 
 	Semicolon: ";",
-	Colon:     ":",
 	Comma:     ",",
 	Dot:       ".",
 }
