@@ -109,7 +109,7 @@ func (s *SpellSource) parse(parser *parser) {
 		return
 	}
 
-	s.Name = parser.Content()
+	s.Name = Name(parser.Content())
 
 	if !parser.LookFor(lexer.Semicolon) {
 		return
@@ -121,22 +121,22 @@ func (s *SpellSource) parse(parser *parser) {
 		case lexer.Group:
 			var decl AtomGroupDecl
 			decl.parse(parser)
-			s.Decls.Groups = append(s.Decls.Groups, decl)
+			s.Decls = append(s.Decls, decl)
 
 		case lexer.Cellar:
 			var decl CellarDecl
 			decl.parse(parser)
-			s.Decls.Cellars = append(s.Decls.Cellars, decl)
+			s.Decls = append(s.Decls, decl)
 
 		case lexer.Rune:
 			var decl RuneDecl
 			decl.parse(parser)
-			s.Decls.Runes = append(s.Decls.Runes, decl)
+			s.Decls = append(s.Decls, decl)
 
 		case lexer.State:
 			var decl StateDecl
 			decl.parse(parser)
-			s.Decls.States = append(s.Decls.States, decl)
+			s.Decls = append(s.Decls, decl)
 
 		case lexer.EOF:
 			return
@@ -156,7 +156,7 @@ func (s *AtomGroupDecl) parse(parser *parser) {
 	if !parser.LookFor(lexer.Identifier) {
 		return
 	}
-	s.Name = parser.Content()
+	s.Name = Name(parser.Content())
 
 	if !parser.LookFor(lexer.LBrace) {
 		return
@@ -166,12 +166,10 @@ func (s *AtomGroupDecl) parse(parser *parser) {
 		parser.Next()
 		switch token := parser.Token(); token {
 		case lexer.Atom:
-			s.Atoms.Atoms = append(s.Atoms.Atoms, Atom(parser.Content()))
+			s.Atoms = append(s.Atoms, Atom(parser.Content()))
 
 		case lexer.Identifier:
-			s.Atoms.Groups = append(s.Atoms.Groups, AtomGroup{
-				Name: parser.Content(),
-			})
+			s.Atoms = append(s.Atoms, Name(parser.Content()))
 
 		case lexer.RBrace:
 			return
@@ -190,14 +188,14 @@ func (s *CellarDecl) parse(parser *parser) {
 	if !parser.LookFor(lexer.Identifier) {
 		return
 	}
-	s.Name = parser.Content()
+	s.Name = Name(parser.Content())
 }
 
 func (s *RuneDecl) parse(parser *parser) {
 	if !parser.LookFor(lexer.Identifier) {
 		return
 	}
-	s.Name = parser.Content()
+	s.Name = Name(parser.Content())
 }
 
 func (s *StateDecl) parse(parser *parser) {
@@ -229,7 +227,7 @@ func (s *State) parse(parser *parser) {
 	if !parser.LookFor(lexer.Identifier) {
 		return
 	}
-	s.Name = parser.Content()
+	s.Name = Name(parser.Content())
 
 	parser.Next()
 	if parser.Token() != lexer.LParen {
@@ -247,7 +245,7 @@ func (s *State) parse(parser *parser) {
 		var state State
 		state.parse(parser)
 
-		s.Param = append(s.Param, state)
+		s.Params = append(s.Params, state)
 
 		parser.Next()
 		switch parser.Token() {
@@ -283,20 +281,16 @@ func (s *Transition) parse(parser *parser) {
 
 	s.Behavior.parse(parser)
 
-	parser.Next()
-	if parser.Token() != lexer.Colon {
-		parser.bubble()
-		for {
-			var move Move
-			move.parse(parser)
+	for {
+		var move Move
+		move.parse(parser)
 
-			s.Moves = append(s.Moves, move)
+		s.Moves = append(s.Moves, move)
 
-			parser.Next()
-			if parser.Token() != lexer.Comma {
-				parser.bubble()
-				break
-			}
+		parser.Next()
+		if parser.Token() != lexer.Comma {
+			parser.bubble()
+			break
 		}
 	}
 
@@ -304,7 +298,7 @@ func (s *Transition) parse(parser *parser) {
 	parser.bubble()
 
 	if parser.Token() == lexer.Semicolon {
-		s.AlwaysHalt = true
+		s.Halt = true
 		return
 	}
 	s.Final.parse(parser)
@@ -315,9 +309,7 @@ func (s *AtomCond) parse(parser *parser) {
 	switch parser.Token() {
 	case lexer.Identifier:
 		s.Tag = TagName
-		s.Group = AtomGroup{
-			Name: parser.Content(),
-		}
+		s.Group = Name(parser.Content())
 
 	case lexer.Atom:
 		s.Tag = TagAtom
@@ -418,6 +410,8 @@ func (s *Behavior) parse(parser *parser) {
 func (s *Move) parse(parser *parser) {
 	parser.Next()
 	switch parser.Token() {
+	case lexer.Nil:
+		*s = MoveNone
 	case lexer.Up:
 		*s = MoveUp
 	case lexer.Down:
@@ -432,6 +426,6 @@ func (s *Move) parse(parser *parser) {
 		*s = MoveBack
 
 	default:
-		parser.ErrExpected(lexer.Up, lexer.Down, lexer.Left, lexer.Right, lexer.Face, lexer.Back)
+		parser.ErrExpected(lexer.Nil, lexer.Down, lexer.Left, lexer.Right, lexer.Face, lexer.Back)
 	}
 }
