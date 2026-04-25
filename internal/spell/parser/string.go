@@ -243,6 +243,8 @@ func (s Behavior) string(b *builder) {
 
 func (s Move) string(b *builder) {
 	switch s {
+	case MoveNil:
+		b.WriteString("nil")
 	case MoveUp:
 		b.WriteString("up")
 	case MoveDown:

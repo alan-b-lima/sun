@@ -90,7 +90,7 @@ const (
 type Move int
 
 const (
-	MoveNone Move = iota
+	MoveNil Move = iota
 	MoveUp
 	MoveDown
 	MoveLeft

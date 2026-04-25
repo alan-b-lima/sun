@@ -411,7 +411,7 @@ func (s *Move) parse(parser *parser) {
 	parser.Next()
 	switch parser.Token() {
 	case lexer.Nil:
-		*s = MoveNone
+		*s = MoveNil
 	case lexer.Up:
 		*s = MoveUp
 	case lexer.Down:
@@ -426,6 +426,6 @@ func (s *Move) parse(parser *parser) {
 		*s = MoveBack
 
 	default:
-		parser.ErrExpected(lexer.Nil, lexer.Down, lexer.Left, lexer.Right, lexer.Face, lexer.Back)
+		parser.ErrExpected(lexer.Nil, lexer.Up, lexer.Down, lexer.Left, lexer.Right, lexer.Face, lexer.Back)
 	}
 }
