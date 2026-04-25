@@ -18,7 +18,7 @@ type Source struct {
 	line, column int
 }
 
-func NewSource(src []byte) *Source {
+func New(src []byte) *Source {
 	return &Source{
 		source:    src,
 		character: ' ',
@@ -28,13 +28,13 @@ func NewSource(src []byte) *Source {
 	}
 }
 
-func NewSourceFromReader(r io.Reader) (*Source, error) {
+func NewFromReader(r io.Reader) (*Source, error) {
 	src, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewSource(src), nil
+	return New(src), nil
 }
 
 func (s *Source) Next() {
