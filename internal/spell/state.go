@@ -2,7 +2,6 @@ package spell
 
 import "github.com/alan-b-lima/sun/internal/atom"
 
-
 type State struct {
 	Transitions []Transition
 }

@@ -31,9 +31,9 @@ func (move Move) Colapse(facing Facing) Move {
 	return move
 }
 
-func MoveCost(move Move, facing Facing) int {
+func MoveCost(move Move, facing Facing) Energy {
 	move = move.Colapse(facing)
-	return abs(move.X) + abs(move.Y)
+	return Energy(abs(move.X) + abs(move.Y))
 }
 
 type Facing bool

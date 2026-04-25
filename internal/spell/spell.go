@@ -8,12 +8,12 @@ type Spell struct {
 	Initial int
 
 	// runtime info
-	
+
 	world  World
 	x, y   int
 	facing Facing
 
-	energy int
+	energy Energy
 	halted bool
 	state  state
 }
@@ -25,6 +25,8 @@ type World interface {
 	Set(x, y int, atom atom.Atom)
 }
 
+type Energy int64
+
 func Make(cellars []Cellar, states []State, initial int) Spell {
 	return Spell{
 		Cellars: cellars,
@@ -33,13 +35,13 @@ func Make(cellars []Cellar, states []State, initial int) Spell {
 	}
 }
 
-func (s Spell) Cast(world World, energy int, x, y int, facing Facing) Spell {
+func (s Spell) Cast(world World, energy Energy, x, y int, facing Facing) Spell {
 	s.world = world
 	s.x = x
 	s.y = y
 	s.facing = facing
 
-	s.energy = energy - CellarCost*len(s.Cellars)
+	s.energy = energy - CellarCost*Energy(len(s.Cellars))
 	s.halted = s.energy < 0
 	s.state = state{State: s.Initial}
 
@@ -54,7 +56,7 @@ func (s *Spell) Zero() {
 	}
 }
 
-func (s *Spell) Energy() int  { return s.energy }
+func (s *Spell) Energy() int  { return int(s.energy) }
 func (s *Spell) Halted() bool { return s.halted }
 
 func (s *Spell) State(index int) (State, bool) {

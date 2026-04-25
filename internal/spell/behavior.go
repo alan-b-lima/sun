@@ -63,7 +63,7 @@ const (
 	BehaviorWrite
 )
 
-var BehaviorCost = [...]int{
+var BehaviorCost = [...]Energy{
 	BehaviorNil:     0,
 	BehaviorAbsorb:  3,
 	BehaviorRelease: 2,
