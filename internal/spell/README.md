@@ -82,10 +82,10 @@ Tokens belong to one of three classes: _keywords_, _identifiers_, _punctuation_,
 Keywords are reserved words and cannot be used as identifiers:
 
 ```
-absorb    cellar    down     face
-group     left      nil      release
-right     rune      spell    state
-up        write
+absorb     back     cellar    down
+face       group    left      nil
+release    right    rune      spell
+state      up       write
 ```
 
 ### Identifiers
@@ -200,7 +200,7 @@ ParamSpec = State .
 A transition in an edge in a graph connection the state of the spell automaton. They are defined as:
 
 ```
-Transition = AtomCond CellarCondList BehaviorList MoveList [ FinalState ]
+Transition = AtomCond CellarCondList Behavior MoveList [ FinalState ]
 ```
 
 ### Atom conditions
@@ -223,14 +223,14 @@ CellarCondSpec = atom | AtomGroupName | RuneName .
 
 ### Behavior
 
-The behavior list is a list of behaviors, which are defined as below, a keyword `nil` may also be used to indicate no behavior.
+A behavior is a action performed by the spell, it is defined as below, the keyword `nil` may also be used to indicate no behavior.
 
 ```
-BehaviorList = "nil" | Behavior { "," Behavior } .
 Behavior
-    = "absorb" "[" CellarName "]"
+    = "nil"
+    | "absorb" "[" CellarName "]"
     | "release" "[" CellarName "]"
-    | "write" "[" CellarName, RuneName "]"
+    | "write" "[" CellarName "," RuneName "]"
     .
 ```
 
@@ -242,12 +242,12 @@ Move list is a list of moves, which are defined as below, a wildcard `:` (U+003A
 
 ```
 MoveList = ":" | Move { "," Move } .
-Move     = "up" | "down" | "left" | "right" | "face" .
+Move     = "up" | "down" | "left" | "right" | "face" | "back" .
 ```
 
-The directions `up`, `down`, `left`, and `right` move the spell in the corresponding direction, while the direction `face` makes the spell face the direction of the direction from which the spell was casted.
+The directions `up`, `down`, `left`, and `right` move the spell in the corresponding direction, while the direction `face` makes the spell move in the direction from which the spell was casted, horizontally, and `back` makes the spell move in the reverse direction of casting.
 
-A spell can only move to an adjacent location, including diagonals, each direction can be thought as a vector `(x, y)`, `up` = `(0, 1)`; `down` = `(0, -1)`; `left` = `(-1, 0)`; `right` = `(1, 0)`; `face` = `left` or `right`. If the sum of all moves yields a value outside of `[-1, 1]` for any coordinate, the movement is considered illegal.
+A spell can only move to an adjacent location, including diagonals, each direction can be thought as a vector `(x, y)`, `up` = `(0, 1)`; `down` = `(0, -1)`; `left` = `(-1, 0)`; `right` = `(1, 0)`; `face` = `left` or `right`; `back` = inverse of `face`. If the sum of all moves yields a value outside of `[-1, 1]` for any coordinate, the movement is considered illegal.
 
 ### Final state
 
