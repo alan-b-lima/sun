@@ -23,6 +23,7 @@ const (
 	keyword_begin
 
 	Absorb
+	Back
 	Cellar
 	Down
 	Face
@@ -94,6 +95,7 @@ var tokens = [...]string{
 	Atom:       "Atom",
 
 	Absorb:  "absorb",
+	Back:    "back",
 	Cellar:  "cellar",
 	Down:    "down",
 	Face:    "face",
