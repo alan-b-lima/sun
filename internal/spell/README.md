@@ -101,9 +101,9 @@ identifier = { letter | digit | "_" } .
 The following character are considered punctuation:
 
 ```
-(    )    ;    :
-[    ]    ,    .
-{    }
+(    )    ;
+[    ]    ,
+{    }    .
 ```
 
 ### Atoms
@@ -116,7 +116,7 @@ atom = "~" identifier "~" .
 
 Atoms are predefined by the interpreter, they may accept values like `~air~` or `~water~`, per se.
 
-## Spell Source
+## Spell source
 
 A spell is build from a single source, called spell source, defined as below:
 
@@ -171,7 +171,7 @@ A rune declaration gives name to a rune, which is a special atom that can be use
 
 ```
 RuneDecl = "rune" RuneName .
-RuneName  = identifier .
+RuneName = identifier .
 ```
 
 ### State declaration
@@ -180,7 +180,7 @@ A state declaration gives name to a state, which defines a node in the automaton
 
 ```
 StateDecl = "state" Signature "{" { Transition ";" } "}" .
-Signature = identifier [ "(" identifier { "," identifier } ")" ]
+Signature = identifier [ "(" identifier { "," identifier } ")" ] .
 ```
 
 A declared state may be a plain state or function state, function states have parameters, which are themselves states.
@@ -247,8 +247,6 @@ Move     = "up" | "down" | "left" | "right" | "face" | "back" .
 
 The directions `up`, `down`, `left`, and `right` move the spell in the corresponding direction, while the direction `face` makes the spell move in the direction from which the spell was casted, horizontally, and `back` makes the spell move in the reverse direction of casting.
 
-A spell can only move to an adjacent location, including diagonals, each direction can be thought as a vector (x, y), `nil` = (0, 0); `up` = (0, 1); `down` = (0, -1); `left` = (-1, 0); `right` = (1, 0); `face` = (0, f); `back` = (0, -f). If the sum of all moves yields a value outside of &PlusMinus;1 for any coordinate, the movement is considered illegal.
-
 ### Final state
 
 The final state is the state to which the transition leads, if not specified, the spell will terminate.
@@ -260,6 +258,47 @@ FinalState = State .
 A final state may depend on the parameters of the current state, for example:
 
 ```
-state foo1(x) { . . . . bar(x) }
-state foo2(x) { . . . . x }
+state foo1(x) { . . nil nil bar(x) }
+state foo2(x) { . . nil nil x }
 ```
+
+## Casting a spell
+
+Casting a spell is the releasing of the automaton in the world, spell are cast with a energy level, every transition depletes this energy, some behaviors and movements deplete the energy in varying levels, however, energy is always depleted, to guarantee spell termination, even if forced.
+
+### Starting a spell
+
+The spell starts with all its cellars empty and in the `start` state, if no `start` state is found, the spell fails. If the `start` state is function-like, the spell also fails.
+
+### Energy
+
+The spell also starts with an integer energy. Then, all $n$ cellars are created, depleting $5n$ energy. On transition, each behavior is associaded with a cost $B$:
+
+| Behavior   | Energy cost |
+| ---------- | ----------: |
+| `nil`      |         $0$ |
+| `absorb`   |         $3$ |
+| `release`  |         $2$ |
+| `write`    |         $1$ |
+
+Then each move is a vector $(x, y)$, `nil` = $(0, 0)$; `up` = $(0, 1)$; `down` = $(0, -1)$; `left` = $(-1, 0)$; `right` = $(1, 0)$; `face` = $(\mathrm{f}, 0)$; `back` = $(-\mathrm{f}, 0)$, with $\mathrm{f} = \pm 1$, depending on the direction of casting. If the sum of all move vectors yields a value outside of $\pm 1$ for any coordinate, the movement is considered illegal and the spell fails. If the spell move $(x, y)$ is valid, its cost is $M = |x| + |y|$.
+
+The full cost of a transition is $C = 1 + B + M$. The cost $C$ is depleted from the energy, and if it hits a number below $0$, the transition is not executed and the spell fails.
+
+### Spell termination
+
+A spell might terminate expectedly or by failure, in both cases, if the cellar contain any world atoms, the will be outspilled from the location of the dying spell is a implementation defined way, which can often rely on randomness.
+
+### Behaviors
+
+The `nil` behavior does nothing, it is the only behavior that does not deplete energy.
+
+The absorption behavior, declared as `"absorb" "[" CellarName "]"`, absorbs the atom it is over and pushes that atom into the given cellar.
+
+The releasing behavior, declared as `"release" "[" CellarName "]"`, pops an atom from the given cellar and releases it into the world at the location of the spell. If and rune instead of an atom is on the top of the cellar, the release behavior does nothing to the world, but still pops the rune from the cellar and depletes energy. If the cellar is empty, the spell fails.
+
+The writing behavior, declared as `"write" "[" CellarName "," RuneName "]"`, writes the given rune on the top of the given cellar.
+
+### Cellars
+
+Cellars are bottomless ordered bundles of atoms and runes, they are created empty and can be manipulated with behaviors. Only the top of the cellar can be observed and manipulated, the rest of the cellar is opaque. Cellars are shared between all states.
