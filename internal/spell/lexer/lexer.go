@@ -16,7 +16,7 @@ type Stream struct {
 	await bool
 }
 
-func NewStream(src *scanner.Source) *Stream {
+func Lex(src *scanner.Source) *Stream {
 	return &Stream{
 		src:   src,
 		token: Illegal,

@@ -76,8 +76,8 @@ func TestLexer(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		source := scanner.NewSource([]byte(test.In))
-		stream := NewStream(source)
+		source := scanner.New([]byte(test.In))
+		stream := Lex(source)
 
 		for j, want := range test.Want {
 			stream.Next()
