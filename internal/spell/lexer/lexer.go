@@ -9,6 +9,7 @@ import (
 type Stream struct {
 	src *scanner.Source
 
+	pos     scanner.Position
 	token   Token
 	content string
 
@@ -25,6 +26,7 @@ func NewStream(src *scanner.Source) *Stream {
 
 func (s *Stream) Next() {
 	for {
+		s.pos = s.src.Position()
 		switch rune := s.next_rune(); {
 		case rune == scanner.EOF:
 			if s.insert_semicolon_after() {
@@ -67,6 +69,7 @@ func (s *Stream) Next() {
 
 		case rune == '/':
 			if rune := s.next_rune(); rune != '/' {
+				s.pos = s.src.Position()
 				s.token = Illegal
 				return
 			}
@@ -103,8 +106,8 @@ func (s *Stream) Token() Token {
 	return s.token
 }
 
-func (s *Stream) At() scanner.Position {
-	return s.src.Position()
+func (s *Stream) Position() scanner.Position {
+	return s.pos
 }
 
 func (s *Stream) Content() string {
