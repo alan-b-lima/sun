@@ -310,15 +310,19 @@ func write[T ~[]byte | ~string](b *builder, buf T) (int, error) {
 
 	b.buf = slices.Grow(b.buf, m)
 
+	var last int
 	for i := range len(buf) {
-		byte := buf[i]
-		b.buf = append(b.buf, buf[i])
+		if buf[i] == '\n' {
+			b.buf = append(b.buf, buf[last:i+1]...)
+			last = i + 1
 
-		if byte == '\n' {
 			for range b.advance {
 				b.buf = append(b.buf, b.tab...)
 			}
 		}
+	}
+	if last < len(buf) {
+		b.buf = append(b.buf, buf[last:]...)
 	}
 
 	return len(b.buf) - n, nil
