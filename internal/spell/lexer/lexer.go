@@ -13,8 +13,7 @@ type Stream struct {
 	token   Token
 	content string
 
-	await  bool
-	insert bool
+	await bool
 }
 
 func NewStream(src *scanner.Source) *Stream {
@@ -81,12 +80,19 @@ func (s *Stream) Next() {
 				return
 			}
 
-		case rune == '}' && s.token != Semicolon:
-			s.token = Semicolon
-			s.bubble()
+		case rune == '}':
+			if s.insert_semicolon_after() {
+				s.bubble()
+				return
+			}
+			s.token = RBrace
 			return
 
-		case rune == ';' && s.token == Semicolon:
+		case rune == ';':
+			if s.token != Semicolon {
+				s.token = Semicolon
+				return
+			}
 
 		case rune == '\n':
 			if s.insert_semicolon_after() {

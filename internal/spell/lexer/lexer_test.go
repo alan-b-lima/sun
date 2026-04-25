@@ -29,6 +29,16 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
+			Name: "semicolon insertion in empty block",
+			In:   `{}`,
+			Want: []TokenEx{
+				{Token: LBrace},
+				{Token: RBrace},
+				{Token: Semicolon},
+				{Token: EOF},
+			},
+		},
+		{
 			Name: "atoms",
 			In:   `~air~ ~dirt~ ~water~`,
 			Want: []TokenEx{
