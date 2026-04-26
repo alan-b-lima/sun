@@ -17,6 +17,14 @@ func (s Tree) String() string {
 	return b.String()
 }
 
+func (a Atom) String() string {
+	return "~" + string(a) + "~"
+}
+
+func (n Name) String() string {
+	return string(n)
+}
+
 func (s SpellSource) string(b *builder) {
 	b.WriteString("Name(")
 	stringify(b, s.Name)
