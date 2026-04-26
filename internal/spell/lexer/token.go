@@ -10,33 +10,33 @@ type Token int
 
 const (
 	Illegal Token = iota
-	EOF
-	Comment // // ...
+	EOF           // EOF
+	Comment       // // ...
 
 	literal_begin
 
 	Identifier // Identifier
-	Atom       // ~Atom~
+	Atom       // Atom
 
 	literal_end
 
 	keyword_begin
 
-	Absorb
-	Back
-	Cellar
-	Down
-	Face
-	Group
-	Left
-	Nil
-	Release
-	Right
-	Rune
-	Spell
-	State
-	Up
-	Write
+	Absorb  // absorb
+	Back    // back
+	Cellar  // cellar
+	Down    // down
+	Face    // face
+	Group   // group
+	Left    // left
+	Nil     // nil
+	Release // release
+	Right   // right
+	Rune    // rune
+	Spell   // spell
+	State   // state
+	Up      // up
+	Write   // write
 
 	keyword_end
 
