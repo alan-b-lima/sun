@@ -289,13 +289,21 @@ The full cost of a transition is $C = 1 + B + M$. The cost $C$ is depleted from 
 
 A spell might terminate expectedly or by failure, in both cases, if the cellar contain any world atoms, the will be outspilled from the location of the dying spell is a implementation defined way, which can often rely on randomness.
 
-### Behaviors
+### Nil behavior
 
 The `nil` behavior does nothing, it is the only behavior that does not deplete energy.
 
-The absorption behavior, declared as `"absorb" "[" CellarName "]"`, absorbs the atom it is over and pushes that atom into the given cellar.
+### Absorption behavior
 
-The releasing behavior, declared as `"release" "[" CellarName "]"`, pops an atom from the given cellar and releases it into the world at the location of the spell. If and rune instead of an atom is on the top of the cellar, the release behavior does nothing to the world, but still pops the rune from the cellar and depletes energy. If the cellar is empty, the spell fails.
+The absorption behavior, declared as `"absorb" "[" CellarName "]"`, absorbs the atom it is over and pushes that atom into the given cellar. The atom in the world is replaced by an `~air~` atom.
+
+### Releasing behavior
+
+The releasing behavior, declared as `"release" "[" CellarName "]"`, pops an atom from the given cellar and releases it into the world at the location of the spell. If the cellar is empty, the spell fails.
+
+If a rune instead of an atom is on the top of the cellar, the release behavior does nothing to the world, but still pops the rune from the cellar and depletes energy. 
+
+### Writing behavior
 
 The writing behavior, declared as `"write" "[" CellarName "," RuneName "]"`, writes the given rune on the top of the given cellar.
 
