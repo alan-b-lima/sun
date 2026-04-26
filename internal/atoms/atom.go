@@ -14,7 +14,7 @@ const (
 
 	atoms_end
 
-	invalid
+	invalid Atom = -1
 )
 
 const Number = atoms_end - atoms_begin - 1
@@ -25,7 +25,7 @@ func (a Atom) Valid() bool {
 
 func (a Atom) String() string {
 	if a.Valid() {
-		s := atoms[a]
+		s := tilde_atoms[a]
 		if s != "" {
 			return s
 		}
