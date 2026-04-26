@@ -16,7 +16,7 @@ type Stream struct {
 	await bool
 }
 
-func Lex(src *scanner.Source) *Stream {
+func New(src *scanner.Source) *Stream {
 	return &Stream{
 		src:   src,
 		token: Illegal,
@@ -174,7 +174,7 @@ func (s *Stream) next_atom() string {
 
 func (s *Stream) insert_semicolon_after() bool {
 	switch s.token {
-	case Identifier, Atom, RParen, RBrace:
+	case Identifier, Atom, Nil, Up, Down, Left, Right, Face, Back, RParen, RBrace:
 		s.token = Semicolon
 		return true
 	}
