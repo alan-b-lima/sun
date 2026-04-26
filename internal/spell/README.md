@@ -16,8 +16,8 @@ Group      = "(" Expression ")" .
 Optional   = "[" Expression "]" .
 Repetition = "{" Expression "}" .
 
-identifier = letter { letter | "-" } .
-literal    = "`" { code-point } "`" | `"` { code-point } `"` .
+identifier = letter { letter | "_" } .
+literal    = "`" { code_point } "`" | `"` { code_point } `"` .
 ```
 
 Productions are expressions constructed from terms and the following operators, in increasing precedence:
@@ -29,14 +29,14 @@ Productions are expressions constructed from terms and the following operators, 
 {}  repetition (0 to n times)
 ```
 
-There also the non standard explanation definition, the identifiers `letter` and `code-point` weren't defined, they might be as such:
+There also the non standard explanation definition, the identifiers `letter` and `code_point` weren't defined, they might be as such:
 
 ```
 letter     = /* an Unicode code point categorized as "Letter" */
-code-point = /* an Unicode code point */
+code_point = /* an Unicode code point */
 ```
 
-Technically `code-point` has to exclude its quotes, be them `"` (U+0022) or <code>&#96;</code> (U+0060), escapes like `\n` for feed form (U+000A), `\r` for carriage return (U+000D), and `\t` for tab (U+0009) may be used as we see fit.
+Technically `code_point` has to exclude its quotes, be them `"` (U+0022) or <code>&#96;</code> (U+0060), escapes like `\n` for feed form (U+000A), `\r` for carriage return (U+000D), and `\t` for tab (U+0009) may be used as we see fit.
 
 ## Source representation
 
@@ -61,21 +61,19 @@ Comments have no intrinsic meaning and are ignored.
 
 ### Semicolons
 
-The formal grammar uses semicolons `;` (U+003B) as terminators for some constructs, however those need not be insert by the sourcerer, as the semicolons are inserted by the lexer:
+The formal grammar uses semicolons `;` (U+003B) as terminators for some constructs, however those need not be insert by the sorcerer, as semicolons are inserted automatically by the lexer at a line break `\n` (U+000A) or before a closing brace `}` following:
 
-1. at a line break following:
-    - an identifier
-    - an atom
-    - a closing paren `)` (U+0028)
-    - a closing brace `}` (U+007D)
-
-1. before a closing brace `}` (U+007D)
+- an identifier
+- an atom
+- any of the keywords `nil`, `up`, `down`, `left`, `right`, `face`, and `back`
+- a closing paren `)` (U+0028)
+- a closing brace `}` (U+007D)
 
 A sequence of semicolon tokens are squashed into a single semicolon token.
 
 ### Tokens
 
-Tokens belong to one of three classes: _keywords_, _identifiers_, _punctuation_, and _atoms_.
+Tokens belong to one of four classes: _keywords_, _identifiers_, _punctuation_, and _atoms_.
 
 ### Keywords
 
@@ -93,7 +91,8 @@ state      up       write
 Identifiers are used to give name to objects, e.g, cellars, atom groups, and states. An identifer, excluding keywords, is defined as:
 
 ```
-identifier = { letter | digit | "_" } .
+identifier           = identifier_character { identifier_character } .
+identifier_character = letter | digit | "_"
 ```
 
 ### Punctuation
@@ -260,6 +259,12 @@ A final state may depend on the parameters of the current state, for example:
 ```
 state foo1(x) { . . nil nil bar(x) }
 state foo2(x) { . . nil nil x }
+```
+
+However, a function-like state cannot receive parameters that way. Therefore, the following is invalid.
+
+```
+state foo3(x) { . . nil nil x(foo3) } // invalid
 ```
 
 ## Casting a spell
