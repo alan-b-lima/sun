@@ -1,6 +1,6 @@
 package spell
 
-import "github.com/alan-b-lima/sun/internal/atom"
+import "github.com/alan-b-lima/sun/internal/atoms"
 
 func (s *Spell) do(behavior Behavior) bool {
 	switch behavior.Action {
@@ -13,7 +13,7 @@ func (s *Spell) do(behavior Behavior) bool {
 		}
 
 		a := s.world.At(s.x, s.y)
-		s.world.Set(s.x, s.y, atom.Air)
+		s.world.Set(s.x, s.y, atoms.Air)
 		cellar.PushAtom(a)
 
 	case BehaviorRelease:
@@ -70,11 +70,11 @@ var BehaviorCost = [...]Energy{
 	BehaviorWrite:   1,
 }
 
-func mix(base, over atom.Atom) (atom.Atom, bool) {
+func mix(base, over atoms.Atom) (atoms.Atom, bool) {
 	switch base {
-	case atom.Nil, atom.Air:
+	case atoms.Nil, atoms.Air:
 		return over, true
 	}
 
-	return atom.Nil, false
+	return atoms.Nil, false
 }

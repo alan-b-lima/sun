@@ -1,6 +1,6 @@
 package spell
 
-import "github.com/alan-b-lima/sun/internal/atom"
+import "github.com/alan-b-lima/sun/internal/atoms"
 
 type State struct {
 	Transitions []Transition
@@ -14,9 +14,9 @@ type Transition struct {
 	Final       Template
 }
 
-type AtomCond [atom.Number]bool
+type AtomCond [atoms.Number]bool
 
-func (c *AtomCond) For(atom atom.Atom) bool {
+func (c *AtomCond) For(atom atoms.Atom) bool {
 	if int(atom) >= len(c) {
 		return false
 	}

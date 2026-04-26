@@ -1,6 +1,6 @@
 package spell
 
-import "github.com/alan-b-lima/sun/internal/atom"
+import "github.com/alan-b-lima/sun/internal/atoms"
 
 type Spell struct {
 	Cellars []Cellar
@@ -21,8 +21,8 @@ type Spell struct {
 type World interface {
 	Dim() (w, h int)
 
-	At(x, y int) atom.Atom
-	Set(x, y int, atom atom.Atom)
+	At(x, y int) atoms.Atom
+	Set(x, y int, atom atoms.Atom)
 }
 
 type Energy int64

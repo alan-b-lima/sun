@@ -1,6 +1,6 @@
 package spell
 
-import "github.com/alan-b-lima/sun/internal/atom"
+import "github.com/alan-b-lima/sun/internal/atoms"
 
 type Cellar struct {
 	Stack []Cell
@@ -12,7 +12,7 @@ func (c *Cellar) Push(cell Cell) {
 	c.Stack = append(c.Stack, cell)
 }
 
-func (c *Cellar) PushAtom(atom atom.Atom) {
+func (c *Cellar) PushAtom(atom atoms.Atom) {
 	c.Push(Cell{Atom: atom, Tag: TagAtom})
 }
 
@@ -43,7 +43,7 @@ const CellarCost = 5
 
 type Cell struct {
 	Rune Rune
-	Atom atom.Atom
+	Atom atoms.Atom
 	Tag  Tag
 }
 
