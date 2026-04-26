@@ -50,10 +50,10 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
-			Name: "spell declaration",
-			In:   `spell name { ~air~ 0[~dirt~] release[0] face name }`,
+			Name: "state declaration",
+			In:   `state name { ~air~ 0[~dirt~] release[0] face name }`,
 			Want: []TokenEx{
-				{Token: Spell},
+				{Token: State},
 				{Token: Identifier, Content: "name"},
 				{Token: LBrace},
 				{Token: Atom, Content: "air"},
@@ -73,11 +73,34 @@ func TestLexer(t *testing.T) {
 				{Token: EOF},
 			},
 		},
+		{
+			Name: "state declaration with immediate halt",
+			In:   `state name { ~air~ 0[~dirt~] release[0] face }`,
+			Want: []TokenEx{
+				{Token: State},
+				{Token: Identifier, Content: "name"},
+				{Token: LBrace},
+				{Token: Atom, Content: "air"},
+				{Token: Identifier, Content: "0"},
+				{Token: LBrack},
+				{Token: Atom, Content: "dirt"},
+				{Token: RBrack},
+				{Token: Release},
+				{Token: LBrack},
+				{Token: Identifier, Content: "0"},
+				{Token: RBrack},
+				{Token: Face},
+				{Token: Semicolon},
+				{Token: RBrace},
+				{Token: Semicolon},
+				{Token: EOF},
+			},
+		},
 	}
 
 	for _, test := range tests {
 		source := scanner.New([]byte(test.In))
-		stream := Lex(source)
+		stream := New(source)
 
 		for j, want := range test.Want {
 			stream.Next()
