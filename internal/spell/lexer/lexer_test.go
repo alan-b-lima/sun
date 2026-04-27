@@ -21,6 +21,20 @@ func TestLexer(t *testing.T) {
 
 	tests := []Test{
 		{
+			Name: "empty spell",
+			In:   ``,
+			Want: []TokenEx{
+				{Token: EOF},
+			},
+		},
+		{
+			Name: "comment at the end of file",
+			In:   `// I'm a comment`,
+			Want: []TokenEx{
+				{Token: EOF},
+			},
+		},
+		{
 			Name: "many semicolons",
 			In:   `;;;;`,
 			Want: []TokenEx{
