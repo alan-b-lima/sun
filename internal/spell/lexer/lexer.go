@@ -73,7 +73,12 @@ func (s *Stream) Next() {
 				return
 			}
 
-			for s.next_rune() != '\n' {
+		Loop:
+			for {
+				switch s.next_rune() {
+				case '\n', scanner.EOF:
+					break Loop
+				}
 			}
 
 			if s.insert_semicolon_after() {
