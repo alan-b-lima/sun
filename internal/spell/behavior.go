@@ -2,7 +2,7 @@ package spell
 
 import "github.com/alan-b-lima/sun/internal/atoms"
 
-func (s *Spell) do(behavior Behavior) bool {
+func (s *CastingSpell) do(behavior Behavior) bool {
 	switch behavior.Action {
 	case BehaviorNil:
 

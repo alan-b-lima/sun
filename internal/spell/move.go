@@ -1,6 +1,6 @@
 package spell
 
-func (s *Spell) move(move Move) bool {
+func (s *CastingSpell) move(move Move) bool {
 	if !move.Valid(s.facing) {
 		return false
 	}

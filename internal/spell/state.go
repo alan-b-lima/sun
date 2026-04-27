@@ -2,9 +2,7 @@ package spell
 
 import "github.com/alan-b-lima/sun/internal/atoms"
 
-type State struct {
-	Transitions []Transition
-}
+type State []Transition
 
 type Transition struct {
 	AtomCond    AtomCond

@@ -2,10 +2,8 @@ package spell
 
 import "github.com/alan-b-lima/sun/internal/atoms"
 
-type Spell struct {
-	Cellars []Cellar
-	States  []State
-	Initial int
+type CastingSpell struct {
+	*Spell
 
 	// runtime info
 
@@ -13,9 +11,17 @@ type Spell struct {
 	x, y   int
 	facing Facing
 
+	cellars []Cellar
+
 	energy Energy
 	halted bool
 	state  state
+}
+
+type Spell struct {
+	Cellars int
+	States  []State
+	Initial int
 }
 
 type World interface {
@@ -27,7 +33,7 @@ type World interface {
 
 type Energy int64
 
-func Make(cellars []Cellar, states []State, initial int) Spell {
+func Make(cellars int, states []State, initial int) Spell {
 	return Spell{
 		Cellars: cellars,
 		States:  states,
@@ -35,45 +41,42 @@ func Make(cellars []Cellar, states []State, initial int) Spell {
 	}
 }
 
-func (s Spell) Cast(world World, energy Energy, x, y int, facing Facing) Spell {
+func (spell *Spell) Cast(world World, energy Energy, x, y int, facing Facing) CastingSpell {
+	s := CastingSpell{
+		Spell: spell,
+	}
+
 	s.world = world
 	s.x = x
 	s.y = y
 	s.facing = facing
 
-	s.energy = energy - CellarCost*Energy(len(s.Cellars))
+	s.cellars = make([]Cellar, spell.Cellars)
+	s.energy = energy - CellarCost*Energy(s.Cellars)
 	s.halted = s.energy < 0
-	s.state = state{State: s.Initial}
+	s.state = state{State: spell.Initial}
 
 	return s
 }
 
-func (s *Spell) Zero() {
-	*s = Spell{
-		Cellars: s.Cellars,
-		States:  s.States,
-		Initial: s.Initial,
-	}
-}
+func (s *CastingSpell) Energy() int  { return int(s.energy) }
+func (s *CastingSpell) Halted() bool { return s.halted }
 
-func (s *Spell) Energy() int  { return int(s.energy) }
-func (s *Spell) Halted() bool { return s.halted }
-
-func (s *Spell) State(index int) (State, bool) {
+func (s *CastingSpell) State(index int) (State, bool) {
 	if index >= len(s.States) {
 		return State{}, false
 	}
 	return s.States[index], true
 }
 
-func (s *Spell) Cellar(index int) (Cellar, bool) {
-	if index >= len(s.Cellars) {
+func (s *CastingSpell) Cellar(index int) (Cellar, bool) {
+	if index >= len(s.cellars) {
 		return Cellar{}, false
 	}
-	return s.Cellars[index], true
+	return s.cellars[index], true
 }
 
-func (s *Spell) Perform() {
+func (s *CastingSpell) Perform() {
 	if s.halted {
 		return
 	}
@@ -100,8 +103,8 @@ func (s *Spell) Perform() {
 	}
 }
 
-func (s *Spell) find(state State) (Transition, bool) {
-	for _, transition := range state.Transitions {
+func (s *CastingSpell) find(state State) (Transition, bool) {
+	for _, transition := range state {
 		atom := s.world.At(s.x, s.y)
 		if !transition.AtomCond.For(atom) {
 			continue
@@ -127,7 +130,7 @@ func (s *Spell) find(state State) (Transition, bool) {
 	return Transition{}, false
 }
 
-func (s *Spell) exec(transition Transition) bool {
+func (s *CastingSpell) exec(transition Transition) bool {
 	cost := 1 +
 		BehaviorCost[transition.Behavior.Action] +
 		MoveCost(transition.Move, s.facing)
@@ -148,7 +151,7 @@ func (s *Spell) exec(transition Transition) bool {
 	return true
 }
 
-func (s *Spell) next(final Template) bool {
+func (s *CastingSpell) next(final Template) bool {
 	next, ok := final.resolve(s.state)
 	if !ok {
 		return false
