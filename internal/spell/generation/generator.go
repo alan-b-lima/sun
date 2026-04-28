@@ -97,17 +97,18 @@ func (gen *generator) make_atom_cond(cond semantics.AtomCond) spell.AtomCond {
 
 func (gen *generator) make_cellar_conds(conds semantics.CellarConds) []spell.CellarCond {
 	formed := make([]spell.CellarCond, 0, len(conds))
-	for _, cond := range conds {
-		formed = append(formed, gen.make_cellar_cond(cond))
+	for cellar, cond := range conds {
+		formed = append(formed, gen.make_cellar_cond(cellar, cond))
 	}
 
 	return formed
 }
 
-func (gen *generator) make_cellar_cond(cond semantics.CellarCond) spell.CellarCond {
+func (gen *generator) make_cellar_cond(cellar semantics.Symbol, cond semantics.CellarCond) spell.CellarCond {
 	switch {
 	case cond.IsRune:
 		return spell.CellarCond{
+			Cellar: gen.cellar_index[cellar],
 			Rune: gen.rune_index[cond.Rune],
 		}
 

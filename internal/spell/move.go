@@ -1,13 +1,13 @@
 package spell
 
 func (s *CastingSpell) move(move Move) bool {
+	move = move.Colapse(s.facing)
 	if !move.Valid(s.facing) {
 		return false
 	}
 
-	s.x += move.X
-	s.y += move.Y
-
+	s.X += move.X
+	s.Y += move.Y
 	return true
 }
 
@@ -28,6 +28,7 @@ func (move Move) Colapse(facing Facing) Move {
 		move.X += move.Xf
 	}
 
+	move.Xf = 0
 	return move
 }
 

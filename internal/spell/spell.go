@@ -8,7 +8,7 @@ type CastingSpell struct {
 	// runtime info
 
 	world  World
-	x, y   int
+	X, Y   int
 	facing Facing
 
 	cellars []Cellar
@@ -25,8 +25,6 @@ type Spell struct {
 }
 
 type World interface {
-	Dim() (w, h int)
-
 	At(x, y int) atoms.Atom
 	Set(x, y int, atom atoms.Atom)
 }
@@ -47,8 +45,8 @@ func (spell *Spell) Cast(world World, energy Energy, x, y int, facing Facing) Ca
 	}
 
 	s.world = world
-	s.x = x
-	s.y = y
+	s.X = x
+	s.Y = y
 	s.facing = facing
 
 	s.cellars = make([]Cellar, spell.Cellars)
@@ -69,11 +67,11 @@ func (s *CastingSpell) State(index int) (State, bool) {
 	return s.States[index], true
 }
 
-func (s *CastingSpell) Cellar(index int) (Cellar, bool) {
+func (s *CastingSpell) Cellar(index int) (*Cellar, bool) {
 	if index >= len(s.cellars) {
-		return Cellar{}, false
+		return &Cellar{}, false
 	}
-	return s.cellars[index], true
+	return &s.cellars[index], true
 }
 
 func (s *CastingSpell) Perform() {
@@ -104,27 +102,30 @@ func (s *CastingSpell) Perform() {
 }
 
 func (s *CastingSpell) find(state State) (Line, bool) {
+Lines:
 	for _, line := range state {
-		atom := s.world.At(s.x, s.y)
+		atom := s.world.At(s.X, s.Y)
 		if !line.AtomCond.For(atom) {
 			continue
 		}
 
-		for i, cond := range line.CellarConds {
-			cellar, ok := s.Cellar(i)
+		for _, cond := range line.CellarConds {
+			cellar, ok := s.Cellar(cond.Cellar)
 			if !ok {
-				continue
+				continue Lines
 			}
 
 			top, ok := cellar.Peek()
 			if !ok {
-				continue
+				continue Lines
 			}
 
-			if cond.For(top) {
-				return line, true
+			if !cond.For(top) {
+				continue Lines
 			}
 		}
+
+		return line, true
 	}
 
 	return Line{}, false

@@ -23,8 +23,9 @@ func (c *AtomCond) For(atom atoms.Atom) bool {
 }
 
 type CellarCond struct {
-	Atom AtomCond
-	Rune Rune
+	Cellar int
+	Atom   AtomCond
+	Rune   Rune
 }
 
 func (c *CellarCond) For(cell Cell) bool {

@@ -12,8 +12,8 @@ func (s *CastingSpell) do(behavior Behavior) bool {
 			return false
 		}
 
-		a := s.world.At(s.x, s.y)
-		s.world.Set(s.x, s.y, atoms.Air)
+		a := s.world.At(s.X, s.Y)
+		s.world.Set(s.X, s.Y, atoms.Air)
 		cellar.PushAtom(a)
 
 	case BehaviorRelease:
@@ -28,12 +28,12 @@ func (s *CastingSpell) do(behavior Behavior) bool {
 		}
 
 		if cell.Tag == TagAtom {
-			res, ok := mix(s.world.At(s.x, s.y), cell.Atom)
+			res, ok := mix(s.world.At(s.X, s.Y), cell.Atom)
 			if !ok {
 				return false
 			}
 
-			s.world.Set(s.x, s.y, res)
+			s.world.Set(s.X, s.Y, res)
 		}
 
 	case BehaviorWrite:
