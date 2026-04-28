@@ -9,11 +9,11 @@ import (
 
 type (
 	State struct {
-		Arity       int
-		Transitions []Transition
+		Arity int
+		Lines []Line
 	}
 
-	Transition struct {
+	Line struct {
 		AtomCond    AtomCond
 		CellarConds CellarConds
 		Behavior    Behavior
@@ -26,9 +26,9 @@ type (
 	state_solver map[Symbol]state
 
 	state struct {
-		Arity       int
-		Transitions []parser.Transition
-		Table       *Scope
+		Arity int
+		Lines []parser.Line
+		Table *Scope
 	}
 )
 
@@ -41,9 +41,9 @@ func (solver state_solver) Add(scope *Scope, decl parser.StateDecl) error {
 	scope = NewScope(scope)
 
 	state := state{
-		Arity:       len(decl.State.Params),
-		Transitions: decl.Transitions,
-		Table:       scope,
+		Arity: len(decl.State.Params),
+		Lines: decl.Lines,
+		Table: scope,
 	}
 
 	for _, param := range decl.State.Params {
@@ -69,53 +69,53 @@ func (solver state_solver) Solve(scope *Scope) (Symbol, map[Symbol]State, error)
 	states := make(map[Symbol]State)
 
 	for symbol, state := range solver {
-		transitions := make([]Transition, 0, len(state.Transitions))
+		lines := make([]Line, 0, len(state.Lines))
 
-		for _, stmt := range state.Transitions {
-			transition, err := solve_transition(solver, state.Table, stmt)
+		for _, stmt := range state.Lines {
+			line, err := solve_line(solver, state.Table, stmt)
 			if err != nil {
 				return NoSymbol, nil, err
 			}
 
-			transitions = append(transitions, transition)
+			lines = append(lines, line)
 		}
 
 		states[symbol] = State{
-			Arity:       state.Arity,
-			Transitions: transitions,
+			Arity: state.Arity,
+			Lines: lines,
 		}
 	}
 
 	return initial, states, nil
 }
 
-func solve_transition(solver state_solver, scope *Scope, stmt parser.Transition) (Transition, error) {
+func solve_line(solver state_solver, scope *Scope, stmt parser.Line) (Line, error) {
 	atom_cond, err := solve_atom_cond(scope, stmt.AtomCond)
 	if err != nil {
-		return Transition{}, err
+		return Line{}, err
 	}
 
 	cellar_conds, err := solve_cellar_conds(scope, stmt.CellarConds)
 	if err != nil {
-		return Transition{}, err
+		return Line{}, err
 	}
 
 	behavior, err := solve_behavior(scope, stmt.Behavior)
 	if err != nil {
-		return Transition{}, err
+		return Line{}, err
 	}
 
 	move, err := solve_move(stmt.Moves)
 	if err != nil {
-		return Transition{}, err
+		return Line{}, err
 	}
 
 	final, err := solve_final(solver, scope, stmt.Final, stmt.Halt)
 	if err != nil {
-		return Transition{}, err
+		return Line{}, err
 	}
 
-	return Transition{
+	return Line{
 		AtomCond:    atom_cond,
 		CellarConds: cellar_conds,
 		Behavior:    behavior,

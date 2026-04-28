@@ -87,30 +87,30 @@ func (s *CastingSpell) Perform() {
 		return
 	}
 
-	transition, ok := s.find(state)
+	line, ok := s.find(state)
 	if !ok {
 		s.halted = true
 		return
 	}
 
-	if !s.exec(transition) {
+	if !s.exec(line) {
 		s.halted = true
 		return
 	}
 
-	if !s.next(transition.Final) {
+	if !s.next(line.Final) {
 		s.halted = true
 	}
 }
 
-func (s *CastingSpell) find(state State) (Transition, bool) {
-	for _, transition := range state {
+func (s *CastingSpell) find(state State) (Line, bool) {
+	for _, line := range state {
 		atom := s.world.At(s.x, s.y)
-		if !transition.AtomCond.For(atom) {
+		if !line.AtomCond.For(atom) {
 			continue
 		}
 
-		for i, cond := range transition.CellarConds {
+		for i, cond := range line.CellarConds {
 			cellar, ok := s.Cellar(i)
 			if !ok {
 				continue
@@ -122,29 +122,29 @@ func (s *CastingSpell) find(state State) (Transition, bool) {
 			}
 
 			if cond.For(top) {
-				return transition, true
+				return line, true
 			}
 		}
 	}
 
-	return Transition{}, false
+	return Line{}, false
 }
 
-func (s *CastingSpell) exec(transition Transition) bool {
+func (s *CastingSpell) exec(line Line) bool {
 	cost := 1 +
-		BehaviorCost[transition.Behavior.Action] +
-		MoveCost(transition.Move, s.facing)
+		BehaviorCost[line.Behavior.Action] +
+		MoveCost(line.Move, s.facing)
 
 	s.energy -= cost
 	if s.energy < 0 {
 		return false
 	}
 
-	if !s.do(transition.Behavior) {
+	if !s.do(line.Behavior) {
 		return false
 	}
 
-	if !s.move(transition.Move) {
+	if !s.move(line.Move) {
 		return false
 	}
 

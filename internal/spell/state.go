@@ -2,9 +2,9 @@ package spell
 
 import "github.com/alan-b-lima/sun/internal/atoms"
 
-type State []Transition
+type State []Line
 
-type Transition struct {
+type Line struct {
 	AtomCond    AtomCond
 	CellarConds []CellarCond
 	Behavior    Behavior
@@ -44,12 +44,17 @@ type state struct {
 }
 
 type Template struct {
-	State  int
-	Params []Template
-	Ref    bool
+	State   int
+	Params  []Template
+	Ref     bool
+	Halting bool
 }
 
 func (t Template) resolve(config state) (state, bool) {
+	if t.Halting {
+		return state{}, false
+	}
+
 	if t.Ref {
 		if t.State >= len(config.Params) {
 			return state{}, false

@@ -112,18 +112,18 @@ func (s StateDecl) string(b *builder) {
 	stringify(b, s.State)
 	b.Dedent()
 
-	if len(s.Transitions) == 0 {
-		b.WriteString("\nTransitionList(nil)")
+	if len(s.Lines) == 0 {
+		b.WriteString("\nLineList(nil)")
 		return
 	}
 
-	b.WriteString("\nTransitionList")
+	b.WriteString("\nLineList")
 	b.Indent()
-	for _, transition := range s.Transitions {
-		b.WriteString("\nTransition")
+	for _, line := range s.Lines {
+		b.WriteString("\nLine")
 		b.Indent()
 		b.WriteString("\n")
-		stringify(b, transition)
+		stringify(b, line)
 		b.Dedent()
 	}
 	b.Dedent()
@@ -151,7 +151,7 @@ func (s State) string(b *builder) {
 	b.Dedent()
 }
 
-func (s Transition) string(b *builder) {
+func (s Line) string(b *builder) {
 	b.WriteString("AtomCond(")
 	stringify(b, s.AtomCond)
 	b.WriteString(")")

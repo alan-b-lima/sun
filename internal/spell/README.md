@@ -147,7 +147,7 @@ Decl
 
 ### Atom group declaration
 
-An atom group declaration gives name to a set of atoms, which can be used in state transitions.
+An atom group declaration gives name to a set of atoms, which can be used in state lines.
 
 ```
 AtomGroupDecl = "group" AtomGroupName "{" { AtomSpec ";" } "}" .
@@ -166,7 +166,7 @@ CellarName = identifier .
 
 ### Rune declaration
 
-A rune declaration gives name to a rune, which is a special atom that can be used in state transitions, but cannot be absorbed and its release does not alter the world.
+A rune declaration gives name to a rune, which is a special atom that can be used in state lines, but cannot be absorbed and its release does not alter the world.
 
 ```
 RuneDecl = "rune" RuneName .
@@ -175,10 +175,10 @@ RuneName = identifier .
 
 ### State declaration
 
-A state declaration gives name to a state, which defines a node in the automaton and all of its possible transitions.
+A state declaration gives name to a state, which defines a node in the automaton and all of its possible lines.
 
 ```
-StateDecl = "state" Signature "{" { Transition ";" } "}" .
+StateDecl = "state" Signature "{" { Line ";" } "}" .
 Signature = identifier [ "(" identifier { "," identifier } ")" ] .
 ```
 
@@ -194,12 +194,12 @@ ParamList = ParamSpec { "," ParamSpec } .
 ParamSpec = State .
 ```
 
-### Transitions
+### Lines
 
-A transition in an edge in a graph connection the state of the spell automaton. They are defined as:
+A line in an edge in a graph connection the state of the spell automaton. They are defined as:
 
 ```
-Transition = AtomCond CellarCondList Behavior MoveList [ FinalState ]
+Line = AtomCond CellarCondList Behavior MoveList [ FinalState ]
 ```
 
 ### Atom conditions
@@ -248,7 +248,7 @@ The directions `up`, `down`, `left`, and `right` move the spell in the correspon
 
 ### Final state
 
-The final state is the state to which the transition leads, if not specified, the spell will terminate.
+The final state is the state to which the line leads to, if not specified, the spell will terminate.
 
 ```
 FinalState = State .
@@ -269,7 +269,7 @@ state foo3(x) { . . nil nil x(foo3) } // invalid
 
 ## Casting a spell
 
-Casting a spell is the releasing of the automaton in the world, spell are cast with a energy level, every transition depletes this energy, some behaviors and movements deplete the energy in varying levels, however, energy is always depleted, to guarantee spell termination, even if forced.
+Casting a spell is the releasing of the automaton in the world, spell are cast with a energy level, every line depletes this energy, some behaviors and movements deplete the energy in varying levels, however, energy is always depleted, to guarantee spell termination, even if forced.
 
 ### Starting a spell
 
@@ -277,7 +277,7 @@ The spell starts with all its cellars empty and in the `start` state, if no `sta
 
 ### Energy
 
-The spell also starts with an integer energy. Then, all $n$ cellars are created, depleting $5n$ energy. On transition, each behavior is associaded with a cost $B$:
+The spell also starts with an integer energy. Then, all $n$ cellars are created, depleting $5n$ energy. On line transition, each behavior is associaded with a cost $B$:
 
 | Behavior   | Energy cost |
 | ---------- | ----------: |
@@ -288,7 +288,7 @@ The spell also starts with an integer energy. Then, all $n$ cellars are created,
 
 Then each move is a vector $(x, y)$, `nil` = $(0, 0)$; `up` = $(0, 1)$; `down` = $(0, -1)$; `left` = $(-1, 0)$; `right` = $(1, 0)$; `face` = $(\mathrm{f}, 0)$; `back` = $(-\mathrm{f}, 0)$, with $\mathrm{f} = \pm 1$, depending on the direction of casting. If the sum of all move vectors yields a value outside of $\pm 1$ for any coordinate, the movement is considered illegal and the spell fails. If the spell move $(x, y)$ is valid, its cost is $M = |x| + |y|$.
 
-The full cost of a transition is $C = 1 + B + M$. The cost $C$ is depleted from the energy, and if it hits a number below $0$, the transition is not executed and the spell fails.
+The full cost of a line is $C = 1 + B + M$. The cost $C$ is depleted from the energy, and if it hits a number below $0$, the line is not executed and the spell fails.
 
 ### Spell termination
 

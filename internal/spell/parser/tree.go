@@ -32,11 +32,11 @@ type (
 	}
 
 	StateDecl struct {
-		State       State
-		Transitions []Transition
+		State State
+		Lines []Line
 	}
 
-	Transition struct {
+	Line struct {
 		AtomCond    AtomCond
 		CellarConds []CellarCond
 		Behavior    Behavior

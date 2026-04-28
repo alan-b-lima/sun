@@ -212,10 +212,10 @@ func (s *StateDecl) parse(parser *parser) {
 		}
 		parser.bubble()
 
-		var transition Transition
-		transition.parse(parser)
+		var line Line
+		line.parse(parser)
 
-		s.Transitions = append(s.Transitions, transition)
+		s.Lines = append(s.Lines, line)
 
 		if !parser.LookFor(lexer.Semicolon) {
 			return
@@ -259,7 +259,7 @@ func (s *State) parse(parser *parser) {
 	}
 }
 
-func (s *Transition) parse(parser *parser) {
+func (s *Line) parse(parser *parser) {
 	s.AtomCond.parse(parser)
 
 	parser.Next()
